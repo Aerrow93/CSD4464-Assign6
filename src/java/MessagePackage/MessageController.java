@@ -5,10 +5,16 @@
  */
 package MessagePackage;
 
+import javax.enterprise.context.ApplicationScoped;
+
 /**
  *
  * @author C0600299
  */
+@ApplicationScoped
 public class MessageController {
-    
+
+    private List<Session> people = new ArrayList<>();
+    private List<JsonObject> messages = new ArrayList<>();
+
 }

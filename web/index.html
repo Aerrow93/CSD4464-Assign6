@@ -6,11 +6,68 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Messages</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div>TODO write content</div>
+        <script src="http://code.jquery.com/jquery.min.js"></script>
+        <script>
+            var wsUri = "ws//localhost:8080/Assign6/messages";
+            $(document).ready(function () {
+                var websocket = new WebSocket(wsUri);
+                websocket.onmessage = function (evt) {
+                    if (typeof evt.data !== 'undefined') {
+                        var json = $.parseJSON(evt.data);
+                        for (var i = 0; i < json.length; i++) {
+                            $('#chatwindow').append('<p>' +
+                                    '<span class="id">' + json[i].id + '</span>' +
+                                    '<span class="title">' + json[i].title + '</span>' +
+                                    '<span class="author">**' + json[i].author + '**</span>' +
+                                    '<span class="contents">' + json[i].contents + '</span>' +
+                                    '<span class="senttime">' + json[i].senttime + '</span>' +
+                                    '</p>');
+                        }
+                    }
+                };
+                $('#send').click(function () {
+                    if (websocket.readyState !== 1) {
+                        $('#chatwindow').html('');
+                        websocket = new WebSocket(wsUri);
+                    }
+                    var data = {
+                        title: $('#title').val(),
+                        author: $('#author').val(),
+                        contents: $('#contents').val(),
+                        senttime: new Date().toISOString()
+                    }
+                    var json = JSON.stringify(data);
+                    websocket.send(json);
+                    ('#contents').val('');
+                });
+            });
+
+        </script>
+
+        <!-- Main HTML content -->
+        <!-- Searching for messages by Id or Author-->
+        <h3>Searching for a post </h3>
+        <p> 
+            ID Search: <input id="searchId" />
+            Author Search: <input id="searchAuthor" />
+            <br /><br />
+            <button id="search">Search</button>
+        </p>
+
+        <!-- Posting new message -->
+        <h3>Posting a new message </h3>
+        <p>Author Name: <input id="author"/>
+            Title: <input id="title"/>
+            <br /><br />
+            Message: <input id="contents" />
+            <br /><br />
+            <button id="send">Send</button>
+        </p>
+        <div id="chatwindow"></div>
     </body>
 </html>
